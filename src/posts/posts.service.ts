@@ -31,6 +31,11 @@ export class PostsService {
           select: {
             username: true,
           }
+        },
+        category: {
+          select: {
+            name: true,
+          }
         }
       }
     });
