@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryEntity } from './entities/category.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
+import PaginatedResponse from 'src/common/types';
 
 @Injectable()
 export class CategoriesService {
@@ -24,13 +25,21 @@ export class CategoriesService {
     });
   }
 
-  findAll(args: Prisma.CategoryFindManyArgs): Promise<CategoryEntity[]> {
-    return this.prisma.category.findMany({
+  async findAll(args: Prisma.CategoryFindManyArgs): Promise<PaginatedResponse<CategoryEntity>> {
+    const result = await this.prisma.category.findMany({
       ...args,
-      include: {
-        posts: true
+    });
+    const count = await this.prisma.category.count({
+      where: args.where,
+    });
+    return {
+      message: "success",
+      status: 200,
+      response: {
+        list: result,
+        total: count,
       }
-    })
+    }
   }
 
   findOne(id: number): Promise<CategoryEntity> {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards, DefaultValuePipe } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryEntity } from './entities/category.entity';
@@ -13,8 +13,18 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Query('filter') filter: string) {
-    return this.categoriessService.findAll({});
+  findAll(
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+    @Query('filter') filter?: string,
+  ) {
+    return this.categoriessService.findAll({
+      skip: skip,
+      take: take,
+      where: {
+        name: filter,
+      }
+    })
   }
 
   @Get(':id')
