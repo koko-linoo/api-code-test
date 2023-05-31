@@ -22,7 +22,9 @@ export class CategoriesController {
       skip: skip,
       take: take,
       where: {
-        name: filter,
+        name: {
+          contains: filter
+        }
       }
     })
   }

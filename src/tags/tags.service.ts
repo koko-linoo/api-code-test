@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagEntity } from './entities/tag.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
+import PaginatedResponse from 'src/common/types';
 
 @Injectable()
 export class TagsService {
@@ -24,8 +25,21 @@ export class TagsService {
     });
   }
 
-  findAll(args: Prisma.TagFindManyArgs): Promise<TagEntity[]> {
-    return this.prisma.tag.findMany({})
+  async findAll(args: Prisma.TagFindManyArgs): Promise<PaginatedResponse<TagEntity>> {
+    const result = await this.prisma.tag.findMany({
+      ...args,
+    });
+    const count = await this.prisma.tag.count({
+      where: args.where,
+    });
+    return {
+      message: "success",
+      status: 200,
+      response: {
+        list: result,
+        total: count,
+      }
+    }
   }
 
   findOne(id: number): Promise<TagEntity> {

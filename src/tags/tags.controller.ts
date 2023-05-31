@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { TagEntity } from './entities/tag.entity';
@@ -13,8 +13,20 @@ export class TagsController {
   }
 
   @Get()
-  findAll(@Query('filter') filter: string) {
-    return this.tagsService.findAll({});
+  findAll(
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip?: number,
+    @Query('take', new DefaultValuePipe(10), ParseIntPipe) take?: number,
+    @Query('filter') filter?: string,
+  ) {
+    return this.tagsService.findAll({
+      skip: skip,
+      take: take,
+      where: {
+        name: {
+          contains: filter
+        }
+      }
+    })
   }
 
   @Get(':id')
