@@ -13,7 +13,8 @@ async function main() {
             username: 'Admin',
         },
         create: {
-            username: "Admin",
+            fullName: "Super Admin",
+            username: "admin",
             password: await hash('password#1', await genSalt(10)),
             role: "ADMIN"
         },

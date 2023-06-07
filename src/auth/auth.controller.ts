@@ -5,14 +5,23 @@ import { RegisterAuthDto } from './dto/register-dto';
 import { RequestWithUser } from 'src/interfaces/request-with-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { JwtAuthGuard } from './auth-guards/jwt-auth.guard';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { SignInAuthDto, SignInAuthResponseDto } from './dto/sign-in-auth.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  async login(@Request() req: RequestWithUser) {
+  @ApiBody({
+    type: SignInAuthDto,
+  })
+  @ApiOkResponse({
+    type: SignInAuthResponseDto,
+  })
+  async login(@Request() req: RequestWithUser): Promise<SignInAuthResponseDto> {
     return this.authService.login(req.user);
   }
 
@@ -21,6 +30,7 @@ export class AuthController {
     return this.authService.register(data);
   }
 
+  @ApiBearerAuth()
   @Get("profile")
   @UseGuards(JwtAuthGuard)
   async profile(@Request() req: RequestWithUser) {

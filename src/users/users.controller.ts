@@ -3,9 +3,12 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/auth-guards/jwt-auth.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
+// @ApiBearerAuth()
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
@@ -16,7 +19,7 @@ export class UsersController {
 
   @Get()
   findAll(@Query('filter') filter: string) {
-    return this.usersService.findAll({});
+    return this.usersService.findAll(filter);
   }
 
   @Get(':id')

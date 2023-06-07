@@ -9,59 +9,13 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
+  fullName  String   @map("full_name") @db.VarChar(50)
   username  String   @unique @db.VarChar(25)
-  password  String   @db.VarChar(250)
+  password  String   @db.VarChar(255)
   status    String   @default("ACTIVE")
   role      String   @db.VarChar(10)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
-  Post      Post[]
 
-  @@index([id, username])
   @@map("users")
-}
-
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique @db.VarChar(25)
-  status    String   @default("ACTIVE")
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
-
-  posts Post[]
-  Tag   Tag[]
-
-  @@map("categories")
-}
-
-model Tag {
-  id         Int    @id @default(autoincrement())
-  name       String @unique @db.VarChar(25)
-  status     String @default("ACTIVE")
-  categoryId Int
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
-
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@map("tags")
-}
-
-model Post {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(50)
-  content     String   @db.Text
-  benefit     String?  @db.Text
-  categoryId  Int
-  createdUser Int
-  status      String   @default("ACTIVE")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
-  imageUrl    String?  @db.VarChar(255)
-
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [createdUser], references: [id], onDelete: Cascade)
-
-  @@map("posts")
 }

@@ -1,6 +1,5 @@
-import { BadRequestException, ConflictException, HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -16,24 +15,43 @@ export class UsersService {
     let password = await hash(createUserDto.password, await genSalt(10));
     return this.prisma.user.create({
       data: {
-        username: createUserDto.username,
+        ...createUserDto,
         password,
         role: "ADMIN",
       },
-    }).catch(e => {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-        throw new ConflictException();
-      }
-      throw e;
     });
   }
 
-  findAll(args: Prisma.UserFindManyArgs): Promise<UserEntity[]> {
-    return this.prisma.user.findMany(args)
+  findAll(filter?: string): Promise<Partial<UserEntity>[]> {
+    return this.prisma.user.findMany({
+      where: {
+        fullName: {
+          contains: filter,
+        }
+      },
+      select: {
+        id: true,
+        fullName: true,
+        username: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      }
+    })
   }
 
-  findOne(id: number): Promise<UserEntity> {
-    return this.prisma.user.findUnique({ where: { id } });
+  findOne(id: number): Promise<Partial<UserEntity>> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        fullName: true,
+        username: true,
+        createdAt: true,
+        updatedAt: true,
+        status: true,
+      }
+    });
   }
 
   findByUsername(username: string): Promise<UserEntity> {
@@ -44,7 +62,7 @@ export class UsersService {
     return this.prisma.user.update({ where: { id }, data: updateUserDto });
   }
 
-  remove(id: number): Promise<UserEntity> {
+  remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
 }
