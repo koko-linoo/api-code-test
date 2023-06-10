@@ -2,11 +2,11 @@ import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterAuthDto } from './dto/register-dto';
-import { RequestWithUser } from 'src/interfaces/request-with-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { JwtAuthGuard } from './auth-guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SignInAuthDto, SignInAuthResponseDto } from './dto/sign-in-auth.dto';
+import { RequestWithUser } from 'src/common/types';
 
 @ApiTags('Auth')
 @Controller('auth')

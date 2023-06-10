@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { ResponseExceptionFilter } from './filters/http-exceptions';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -13,6 +14,10 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
+
+  app.useGlobalFilters(
+    new ResponseExceptionFilter(),
+  );
 
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutdownHooks(app);

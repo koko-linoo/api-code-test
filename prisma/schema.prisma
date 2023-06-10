@@ -19,3 +19,104 @@ model User {
 
   @@map("users")
 }
+
+model Service {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.VarChar(255)
+  status     String       @default("ACTIVE")
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt  DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+  OrgService OrgService[]
+
+  @@map("services")
+}
+
+model StateDivision {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique @db.VarChar(255)
+  status    String     @default("ACTIVE")
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+  Township  Township[]
+
+  @@map("states_divisions")
+}
+
+model Township {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  stateId   Int
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  state       StateDivision @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  OrgTownship OrgTownship[]
+
+  @@map("townships")
+}
+
+model TargetPerson {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique @db.VarChar(255)
+  status       String         @default("ACTIVE")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+  Organization Organization[]
+
+  @@map("target_persons")
+}
+
+model FocalPerson {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(50)
+  phone        String         @unique @db.VarChar(25)
+  email        String         @db.VarChar(100)
+  position     String         @db.VarChar(50)
+  status       String         @default("ACTIVE")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+  Organization Organization[]
+
+  @@map("focal_persons")
+}
+
+model Organization {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(255)
+  focalId   Int
+  targetId  Int
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  focalPerson   FocalPerson   @relation(references: [id], fields: [focalId], onDelete: Restrict)
+  targetPerson  TargetPerson  @relation(references: [id], fields: [targetId], onDelete: Restrict)
+  orgTownshipId Int?
+  OrgTownship   OrgTownship[]
+  OrgService    OrgService[]
+
+  @@map("organizations")
+}
+
+model OrgTownship {
+  id     Int @id @default(autoincrement())
+  orgId  Int
+  townId Int
+
+  organization Organization @relation(references: [id], fields: [orgId], onDelete: Cascade)
+  township     Township     @relation(references: [id], fields: [townId], onDelete: Restrict)
+
+  @@map("org_townships")
+}
+
+model OrgService {
+  id        Int @id @default(autoincrement())
+  orgId     Int
+  serviceId Int
+
+  organization Organization @relation(references: [id], fields: [orgId], onDelete: Cascade)
+  service      Service      @relation(references: [id], fields: [serviceId], onDelete: Restrict)
+
+  @@map("org_services")
+}

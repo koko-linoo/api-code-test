@@ -10,7 +10,7 @@ export class UsersService {
 
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<UserEntity, "password">> {
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
 
     let password = await hash(createUserDto.password, await genSalt(10));
     return this.prisma.user.create({
@@ -19,7 +19,7 @@ export class UsersService {
         password,
         role: "ADMIN",
       },
-    });
+    })
   }
 
   findAll(filter?: string): Promise<Partial<UserEntity>[]> {
@@ -29,33 +29,17 @@ export class UsersService {
           contains: filter,
         }
       },
-      select: {
-        id: true,
-        fullName: true,
-        username: true,
-        createdAt: true,
-        updatedAt: true,
-        status: true,
-      }
     })
   }
 
-  findOne(id: number): Promise<Partial<UserEntity>> {
+  findOne(id: number): Promise<UserEntity> {
     return this.prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        fullName: true,
-        username: true,
-        createdAt: true,
-        updatedAt: true,
-        status: true,
-      }
     });
   }
 
   findByUsername(username: string): Promise<UserEntity> {
-    return this.prisma.user.findUnique({ where: { username } });
+    return this.prisma.user.findUniqueOrThrow({ where: { username } });
   }
 
   update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
