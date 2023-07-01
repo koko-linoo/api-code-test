@@ -7,10 +7,10 @@ const prisma = new PrismaClient();
 async function main() {
     await prisma.user.upsert({
         where: {
-            username: "Admin"
+            username: "admin"
         },
         update: {
-            username: 'Admin',
+            username: 'admin',
         },
         create: {
             fullName: "Super Admin",

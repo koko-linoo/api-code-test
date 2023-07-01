@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterAuthDto } from './dto/register-dto';
@@ -7,14 +7,15 @@ import { JwtAuthGuard } from './auth-guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SignInAuthDto, SignInAuthResponseDto } from './dto/sign-in-auth.dto';
 import { RequestWithUser } from 'src/common/types';
+import { TransformInterceptor } from 'src/interceptors/transform-interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @UseGuards(AuthGuard('local'))
   @Post('login')
+  @UseGuards(AuthGuard('local'))
   @ApiBody({
     type: SignInAuthDto,
   })
@@ -30,9 +31,11 @@ export class AuthController {
     return this.authService.register(data);
   }
 
-  @ApiBearerAuth()
   @Get("profile")
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserEntity })
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new TransformInterceptor(UserEntity))
   async profile(@Request() req: RequestWithUser) {
     return this.authService.profile(req.user);
   }
