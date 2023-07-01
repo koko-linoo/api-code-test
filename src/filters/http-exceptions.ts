@@ -10,6 +10,8 @@ export class ResponseExceptionFilter implements ExceptionFilter {
         let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
         let message: string = "Internal Server Error";
 
+        console.log(e);
+
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
             switch (e.code) {
                 case "P2002":
