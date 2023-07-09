@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FocalPersonsModule } from './focal-persons/focal-persons.module';
 import { TownshipsModule } from './townships/townships.module';
 import { StatesModule } from './state/states.module';
+import { TargetPersonsModule } from './target-persons/target-persons.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { StatesModule } from './state/states.module';
     PrismaModule,
     FocalPersonsModule,
     AuthModule,
+    TargetPersonsModule,
   ],
   controllers: [AppController],
   providers: [

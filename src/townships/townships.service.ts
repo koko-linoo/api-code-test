@@ -23,6 +23,9 @@ export class TownshipsService {
           contains: filter,
         }
       },
+      include: {
+        state: true,
+      }
     })
   }
 
